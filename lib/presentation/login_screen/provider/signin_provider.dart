@@ -134,6 +134,12 @@ class SignInProvider with ChangeNotifier {
 
       // Check if the email is verified
       if (userCredential.user?.emailVerified == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login successful!"),
+            backgroundColor: Colors.green,
+          ),
+        );
         return "Login successful!";
       } else {
         return "Please verify your email before logging in.";

@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_project/presentation/login_screen/provider/signin_provider.dart';
 import 'package:firebase_project/presentation/login_screen/signin_screen.dart';
@@ -22,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => SignUpProvider()),
           ChangeNotifierProvider(create: (_) => SignInProvider()),
     ],
       child: MaterialApp(

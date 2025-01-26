@@ -15,11 +15,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String userEmail = '';
   String userUid = '';
 
-  // Method to load user details from local storage
   Future<void> _loadUserDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Retrieve the user details
     setState(() {
       userName = prefs.getString('userName') ?? 'No Name';
       userEmail = prefs.getString('userEmail') ?? 'No Email';
@@ -27,14 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // Method to logout the user
   Future<void> _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // Clear the user details from local storage
     await prefs.clear();
-
-    // Navigate back to the login screen (assuming it's named LoginScreen)
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const SignInScreen()));
   }
@@ -42,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserDetails();  // Load user details when the screen is created
+    _loadUserDetails();
   }
 
   @override
@@ -51,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: Text('Home')),
       body: Center(
         child: userName.isEmpty
-            ? CircularProgressIndicator()  // Show loading indicator while fetching data
+            ? CircularProgressIndicator()
             : Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

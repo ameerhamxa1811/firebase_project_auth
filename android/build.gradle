@@ -1,18 +1,23 @@
 allprojects {
     repositories {
-        google()
-        mavenCentral()
+        google()      // Google repository (for Firebase and Google Sign-In)
+        mavenCentral() // Maven Central repository
+        jcenter()     // Optional: JCenter repository (though deprecated, sometimes needed for legacy dependencies)
     }
 }
 
-rootProject.buildDir = "../build"
+rootProject.buildDir = "../build" // Define the root build directory
+
 subprojects {
+    // Assign a specific build directory for each subproject
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
 subprojects {
+    // Ensure dependencies are evaluated on the ":app" project
     project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+    delete rootProject.buildDir // Clean task to delete the build directory
 }

@@ -1,7 +1,7 @@
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
-    id 'com.google.gms.google-services'
+    id 'com.google.gms.google-services' // This is important for Firebase and Google Sign-In
     // END: FlutterFire Configuration
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.flutterflex.firebase_auth"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -23,24 +23,32 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.flutterflex.firebase_auth"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 33
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Signing config (ensure this is configured for release)
             signingConfig = signingConfigs.debug
         }
     }
 }
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-auth:20.1.0' // Add Google Sign-In SDK
+    implementation 'com.google.firebase:firebase-auth:21.0.3' // Ensure Firebase Auth is added
+    implementation 'com.google.firebase:firebase-core:21.0.0' // Firebase Core dependency
+
+    // You might want to add other dependencies for Firebase or Google APIs as needed
+}
+
+// Apply the google-services plugin at the bottom of the file
+apply plugin: 'com.google.gms.google-services' // This ensures Firebase and Google Sign-In work properly in the project
 
 flutter {
     source = "../.."

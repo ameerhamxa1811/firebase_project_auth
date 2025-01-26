@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_project/presentation/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../../core/utils/local_storage.dart';
 
 class SignInProvider with ChangeNotifier {
@@ -14,7 +16,79 @@ class SignInProvider with ChangeNotifier {
     _isLoading = value;
     notifyListeners();
   }
+  Future<void> signInWithGoogle(BuildContext context) async {
+    try {
+      // Initialize Google Sign-In
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
+      if (googleUser == null) {
+        // User canceled the sign-in
+        debugPrint("Google Sign-In was cancelled.");
+        return;
+      }
+
+      // Authenticate with Google
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Get credentials to sign in with Firebase
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in with Firebase
+      final UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final User? firebaseUser = userCredential.user;
+
+      if (firebaseUser != null) {
+        debugPrint("Firebase Sign-In successful!");
+        debugPrint("User Email: ${firebaseUser.email}");
+        debugPrint("User Name: ${firebaseUser.displayName}");
+        debugPrint("User Photo: ${firebaseUser.photoURL}");
+
+        // Check if user exists in Firestore
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(firebaseUser.uid)
+            .get();
+
+        if (!userDoc.exists) {
+          // Add new user to Firestore if not present
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(firebaseUser.uid)
+              .set({
+            'name': firebaseUser.displayName ?? 'No Name',
+            'email': firebaseUser.email,
+            'photoUrl': firebaseUser.photoURL,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          debugPrint("New user added to Firestore.");
+        }
+
+        // Save user details locally
+        await _localStorage.saveUserDetails(
+          firebaseUser.displayName ?? 'No Name',
+          firebaseUser.email ?? 'No Email',
+          firebaseUser.uid,
+        );
+
+        // Navigate to the Home Screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } catch (error) {
+      debugPrint("Google Sign-In Error: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Google Sign-In failed. Please try again.")),
+      );
+    }
+  }
   Future<String> loginUser({
     required String email,
     required String password,

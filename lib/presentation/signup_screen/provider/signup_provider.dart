@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../core/utils/local_storage.dart';
 import '../../login_screen/signin_screen.dart';
 
-class AuthService extends ChangeNotifier {
+class SignUpProvider extends ChangeNotifier {
   final LocalStorage _localStorage = LocalStorage();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 

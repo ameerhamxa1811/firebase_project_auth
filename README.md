@@ -9,6 +9,8 @@ Authentication with Google
 
 Cloud Firestore
 ![image](https://github.com/user-attachments/assets/6d601101-366b-4669-ae74-e5f54651c155)
+![image](https://github.com/user-attachments/assets/163c90cf-2a3a-4056-a6f7-b2a2a128deb6)
+
 
 Google Drive apk video link
 https://drive.google.com/file/d/1igYuElwCrT1MwQidu0VBSKK57sYtncw4/view?usp=sharing

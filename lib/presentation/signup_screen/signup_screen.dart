@@ -1,11 +1,14 @@
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_textformfield.dart';
 import '../../widgets/customtextfield.dart';
 import '../../widgets/social_button_row.dart';
+import '../login_screen/provider/signin_provider.dart';
 import '../login_screen/signin_screen.dart';
 import '../signup_screen/provider/signup_provider.dart';
 
@@ -65,6 +68,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final provider = Provider.of<SignInProvider>(context);
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -105,11 +111,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               Image.asset(
                                 'assets/images/sign_up_ilustration.png',
                                 fit: BoxFit.fill,
-                                height: 200,
+                                height: 200.h,
                               ),
                             ],
                           ),
-                          const SizedBox(height: 2),
                           // Form Container
                           Container(
                             width: MediaQuery.of(context).size.width * 0.99,
@@ -122,13 +127,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(50),
-                                topRight: Radius.circular(50),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(50.r),
+                                topRight: Radius.circular(50.r),
                               ),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(30.0),
+                              padding: const EdgeInsets.all(30.0).w,
                               child: Form(
                                 key: _formKey,
                                 child: Column(
@@ -139,31 +144,30 @@ class _SignupScreenState extends State<SignupScreen> {
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w500,
                                       color: Colors.white,
-                                      fontSize: 35,
+                                      fontSize: 35.sp,
                                     ),
-                                    const SizedBox(height: 10),
                                     CustomTextField(
                                       text: 'Free Forever, No Credit Card Needed',
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w400,
                                       color: Colors.grey,
-                                      fontSize: 13,
+                                      fontSize: 13.sp,
                                     ),
-                                    const SizedBox(height: 30),
+                                    SizedBox(height: 30.h),
                                     CustomTextFormField(
                                       label: 'Email Address',
                                       hintText: 'example@domain.com',
                                       iconPath: 'assets/images/mail_icon.png',
                                       controller: emailController,
                                     ),
-                                    const SizedBox(height: 20),
+                                    SizedBox(height: 20.h),
                                     CustomTextFormField(
                                       label: 'Your Name',
                                       hintText: 'John Wick',
                                       iconPath: 'assets/images/name_icon.png',
                                       controller: nameController,
                                     ),
-                                    const SizedBox(height: 20),
+                                    SizedBox(height: 20.h),
                                     CustomTextFormField(
                                       label: 'Password',
                                       hintText: '•••••••',
@@ -171,7 +175,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       obscureText: true,
                                       controller: passwordController,
                                     ),
-                                    const SizedBox(height: 20),
+                                    SizedBox(height: 20.h),
                                     isLoading
                                         ? const Center(
                                       child: CircularProgressIndicator(),
@@ -182,7 +186,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ),
                                     if (errorMessage.isNotEmpty)
                                       Padding(
-                                        padding: const EdgeInsets.only(top: 10.0),
+                                        padding: const EdgeInsets.only(top: 10.0).r,
                                         child: Text(
                                           errorMessage,
                                           style: const TextStyle(
@@ -191,7 +195,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                           ),
                                         ),
                                       ),
-                                    const SizedBox(height: 15),
+                                    SizedBox(height: 10.h),
                                     Row(
                                       children: [
                                         const Expanded(
@@ -201,12 +205,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                             indent: 25,
                                           ),
                                         ),
-                                        const SizedBox(width: 10),
+                                        SizedBox(width: 10.w),
                                         const Text(
                                           'Or sign up with',
                                           style: TextStyle(color: Colors.grey),
                                         ),
-                                        const SizedBox(width: 10),
+                                        SizedBox(width: 10.w),
                                         const Expanded(
                                           child: Divider(
                                             color: Colors.grey,
@@ -216,12 +220,37 @@ class _SignupScreenState extends State<SignupScreen> {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 10),
+                                    SizedBox(height: 10.h),
                                     SocialButtonRow(
-                                      onGooglePressed: () {},
+                                      onGooglePressed: () {
+                                        provider.signInWithGoogle(context);
+                                      },
                                       onApplePressed: () {},
                                       onFacebookPressed: () {},
                                     ),
+                                    SizedBox(height: 10.h,),
+                                    Center(
+                                        child: RichText(
+                                            text: TextSpan(
+                                                text: "Already have an account? ",
+                                                style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                                                children: [
+                                                  TextSpan(
+                                                    text: 'Sign in',
+                                                    style: TextStyle(fontSize: 16.sp, color: Colors.yellowAccent),
+                                                    recognizer: TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        // Navigate to the SignupScreen
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(builder: (context) => SignInScreen()),
+                                                        );
+                                                      },
+                                                  )
+                                                ]
+                                            )
+                                        )
+                                    )
                                   ],
                                 ),
                               ),

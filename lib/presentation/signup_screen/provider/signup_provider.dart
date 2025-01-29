@@ -11,6 +11,8 @@ class SignUpProvider extends ChangeNotifier {
   final LocalStorage _localStorage = LocalStorage();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  String get photoUrl => "";
+
   Future<String> signupUser({
     required String name,
     required String email,
@@ -57,7 +59,7 @@ class SignUpProvider extends ChangeNotifier {
         });
 
         // Save the user details in local storage
-        await _localStorage.saveUserDetails(name, email, userCredential.user!.uid);
+        await _localStorage.saveUserDetails(name, email, userCredential.user!.uid, photoUrl);
 
         // Show a snack bar with a message
         ScaffoldMessenger.of(context).showSnackBar(

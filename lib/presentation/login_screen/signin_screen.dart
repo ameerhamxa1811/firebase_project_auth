@@ -1,12 +1,15 @@
 import 'dart:ui';
 import 'package:firebase_project/presentation/login_screen/provider/signin_provider.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import '../home_screen/home_screen.dart';
+import '../home_screen/profile_screen.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_textformfield.dart';
 import '../../widgets/customtextfield.dart';
 import '../../widgets/social_button_row.dart';
+import '../signup_screen/signup_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -43,12 +46,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               // Main content
-              SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height,
-                  ),
+              SafeArea(
+                child: SingleChildScrollView(
                   child: IntrinsicHeight(
                     child: Stack(
                         children: [
@@ -60,15 +59,21 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                       Column(
                         children: [
-                          Image.asset(
-                            'assets/images/login_Illustration.png',
-                            fit: BoxFit.fitWidth,
-                            width: double.infinity,
-                            height: 300,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Image.asset(
+                                'assets/images/login_Illustration.png',
+                                fit: BoxFit.fill,
+                                // width: double.infinity,
+                                height: 200.h,
+                              ),
+                            ],
                           ),
                           Expanded(
                             child: Container(
                               width: double.infinity,
+                              height: 550.h,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
@@ -78,129 +83,144 @@ class _SignInScreenState extends State<SignInScreen> {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(50),
-                                  topRight: Radius.circular(50),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(50.r),
+                                  topRight: Radius.circular(50.r)
                                 ),
                               ),
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(35),
-                                  topRight: Radius.circular(35),
-                                ),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(30.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Padding(
+                                padding: const EdgeInsets.all(30.0).w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomTextField(
+                                      text: 'Welcome Back!',
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 35.sp,
+                                    ),
+                                    SizedBox(height: 1.h),
+                                    CustomTextField(
+                                      text: 'Sign in to continue',
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.grey,
+                                      fontSize: 13.sp,
+                                    ),
+                                    SizedBox(height: 30.h),
+                                    CustomTextFormField(
+                                      label: 'Email Address',
+                                      hintText: 'example@domain.com',
+                                      iconPath: 'assets/images/mail_icon.png',
+                                      controller: emailController,
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    CustomTextFormField(
+                                      label: 'Password',
+                                      hintText: '•••••••',
+                                      iconPath: 'assets/images/password_icon.png',
+                                      obscureText: true,
+                                      controller: passwordController,
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    provider.isLoading
+                                        ? const Center(
+                                        child: CircularProgressIndicator())
+                                        : CustomButton(
+                                      text: 'Sign in',
+                                      onPressed: () async {
+                                        provider.setLoading(true);
+                                        String res = await provider.loginUser(
+                                          email: emailController.text,
+                                          password: passwordController.text,
+                                          context: context,
+                                        );
+
+                                        if (res == "Login successful!") {
+                                          Navigator.of(context)
+                                              .pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ProfileScreen(),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(content: Text(res)),
+                                          );
+                                        }
+
+                                        provider.setLoading(false);
+                                      },
+                                    ),
+                                    SizedBox(height: 15.h),
+                                    Row(
                                       children: [
-                                        CustomTextField(
-                                          text: 'Welcome Back!',
-                                          fontFamily: 'Poppins',
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
-                                          fontSize: 35,
+                                        const Expanded(
+                                          child: Divider(
+                                            color: Colors.grey,
+                                            thickness: 1,
+                                            indent: 25,
+                                          ),
                                         ),
-                                        const SizedBox(height: 10),
-                                        CustomTextField(
-                                          text: 'Sign in to continue',
-                                          fontFamily: 'Poppins',
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.grey,
-                                          fontSize: 13,
+                                        SizedBox(width: 10.w),
+                                        const Text(
+                                          'Or sign in with',
+                                          style: TextStyle(color: Colors.grey),
                                         ),
-                                        const SizedBox(height: 30),
-                                        CustomTextFormField(
-                                          label: 'Email Address',
-                                          hintText: 'example@domain.com',
-                                          iconPath: 'assets/images/mail_icon.png',
-                                          controller: emailController,
-                                        ),
-                                        const SizedBox(height: 20),
-                                        CustomTextFormField(
-                                          label: 'Password',
-                                          hintText: '•••••••',
-                                          iconPath: 'assets/images/password_icon.png',
-                                          obscureText: true,
-                                          controller: passwordController,
-                                        ),
-                                        const SizedBox(height: 20),
-                                        provider.isLoading
-                                            ? const Center(
-                                            child: CircularProgressIndicator())
-                                            : CustomButton(
-                                          text: 'Sign in',
-                                          onPressed: () async {
-                                            provider.setLoading(true);
-                                            String res = await provider.loginUser(
-                                              email: emailController.text,
-                                              password: passwordController.text,
-                                              context: context,
-                                            );
-
-                                            if (res == "Login successful!") {
-                                              Navigator.of(context)
-                                                  .pushReplacement(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      HomeScreen(),
-                                                ),
-                                              );
-                                            } else {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(content: Text(res)),
-                                              );
-                                            }
-
-                                            provider.setLoading(false);
-                                          },
-                                        ),
-                                        const SizedBox(height: 15),
-                                        Row(
-                                          children: [
-                                            const Expanded(
-                                              child: Divider(
-                                                color: Colors.grey,
-                                                thickness: 1,
-                                                indent: 25,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            const Text(
-                                              'Or sign in with',
-                                              style: TextStyle(color: Colors.grey),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            const Expanded(
-                                              child: Divider(
-                                                color: Colors.grey,
-                                                thickness: 1,
-                                                endIndent: 25,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 10),
-                                        SocialButtonRow(
-                                          onGooglePressed: () {
-                                            provider.signInWithGoogle(context);
-                                          },
-                                          onApplePressed: () {
-                                            // Handle Apple sign-in
-                                          },
-                                          onFacebookPressed: () {
-                                            // Handle Facebook sign-in
-                                          },
+                                        SizedBox(width: 10.w),
+                                        const Expanded(
+                                          child: Divider(
+                                            color: Colors.grey,
+                                            thickness: 1,
+                                            endIndent: 25,
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                    SizedBox(height: 10.h),
+                                    SocialButtonRow(
+                                      onGooglePressed: () {
+                                        provider.signInWithGoogle(context);
+                                      },
+                                      onApplePressed: () {
+                                        // Handle Apple sign-in
+                                      },
+                                      onFacebookPressed: () {
+                                        // Handle Facebook sign-in
+                                      },
+                                    ),
+                                SizedBox(height: 15.h,),
+                                Center(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: "Don't have an account? ",
+                                      style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                                      children: [
+                                      TextSpan(
+                                      text: 'Sign Up',
+                                      style: TextStyle(fontSize: 16.sp, color: Colors.yellowAccent),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          // Navigate to the SignupScreen
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => SignupScreen()),
+                                          );
+                                        },
+                                      )
+                                      ]
+                                  )
+                                  )
+                                )
+                                  ],
                                 ),
                               ),
                             ),
                           ),
+
                         ],
                       ),
                      ]

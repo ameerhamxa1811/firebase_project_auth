@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final String label;
@@ -27,7 +28,7 @@ class CustomTextFormField extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         label: Padding(
-          padding: EdgeInsets.only(bottom: 25),
+          padding: EdgeInsets.only(bottom: 25).r,
           child: Text(label),
         ),
         labelStyle: const TextStyle(color: Colors.grey),
@@ -35,17 +36,17 @@ class CustomTextFormField extends StatelessWidget {
         hintText: hintText,
         hintStyle: const TextStyle(color: Colors.grey),
         prefixIcon: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0).w,
           child: Image.asset(
             iconPath,
-            width: 20,
-            height: 20,
+            width: 20.w,
+            height: 20.h,
           ),
         ),
         filled: true,
         fillColor: const Color(0x33FFFFFF),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(11.0),
+          borderRadius: BorderRadius.circular(11.0).w,
           borderSide: BorderSide.none,
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SocialButtonRow extends StatelessWidget {
   final VoidCallback onGooglePressed;
@@ -23,12 +24,12 @@ class SocialButtonRow extends StatelessWidget {
           imagePath: 'assets/images/google_image.png',
           onPressed: onGooglePressed,
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10.w),
         SocialButton(
           imagePath: 'assets/images/apple_image.png',
           onPressed: onApplePressed,
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10.w),
         SocialButton(
           imagePath: 'assets/images/facebook_image.png',
           onPressed: onFacebookPressed,
@@ -49,37 +50,37 @@ class SocialButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 60,
-        height: 60,
+        width: 60.w,
+        height: 60.h,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
             colors: [Color(0xFF181419), Color(0xFF2b0a37)],
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12).w,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
-              blurRadius: 4,
+              blurRadius: 4.r,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(12.0).w,
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12.0),
+                borderRadius: BorderRadius.circular(12.0).w,
               ),
               child: Center(
                 child: Image.asset(
                   imagePath,
-                  width: 30,
-                  height: 30,
+                  width: 30.w,
+                  height: 30.h,
                   fit: BoxFit.cover,
                 ),
               ),

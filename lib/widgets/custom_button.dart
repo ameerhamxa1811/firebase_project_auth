@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -15,7 +16,7 @@ class CustomButton extends StatelessWidget {
         backgroundColor: Colors.transparent,
         padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(25.0),
+          borderRadius: BorderRadius.circular(25.0).w,
         ),
       ),
       child: Ink(
@@ -25,12 +26,12 @@ class CustomButton extends StatelessWidget {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          borderRadius: BorderRadius.circular(11.0),
+          borderRadius: BorderRadius.circular(11.0).w,
         ),
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 12),
+          padding: EdgeInsets.symmetric(vertical: 12).r,
           alignment: Alignment.center,
-          child: Text(text, style: TextStyle(color: Colors.white, fontSize: 18)),
+          child: Text(text, style: TextStyle(color: Colors.white, fontSize: 18.sp)),
         ),
       ),
     );

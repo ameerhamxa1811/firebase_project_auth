@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_project/presentation/home_screen/home_screen.dart';
+import 'package:firebase_project/presentation/home_screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/utils/local_storage.dart';
 
 class SignInProvider with ChangeNotifier {
@@ -16,15 +17,23 @@ class SignInProvider with ChangeNotifier {
     _isLoading = value;
     notifyListeners();
   }
+
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
+      setLoading(true);
+
       // Initialize Google Sign-In
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser == null) {
-        // User canceled the sign-in
-        debugPrint("Google Sign-In was cancelled.");
+        setLoading(false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Google Sign-In was cancelled."),
+            backgroundColor: Colors.orange,
+          ),
+        );
         return;
       }
 
@@ -44,11 +53,6 @@ class SignInProvider with ChangeNotifier {
       final User? firebaseUser = userCredential.user;
 
       if (firebaseUser != null) {
-        debugPrint("Firebase Sign-In successful!");
-        debugPrint("User Email: ${firebaseUser.email}");
-        debugPrint("User Name: ${firebaseUser.displayName}");
-        debugPrint("User Photo: ${firebaseUser.photoURL}");
-
         // Check if user exists in Firestore
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
@@ -66,7 +70,6 @@ class SignInProvider with ChangeNotifier {
             'photoUrl': firebaseUser.photoURL,
             'createdAt': FieldValue.serverTimestamp(),
           });
-          debugPrint("New user added to Firestore.");
         }
 
         // Save user details locally
@@ -74,45 +77,59 @@ class SignInProvider with ChangeNotifier {
           firebaseUser.displayName ?? 'No Name',
           firebaseUser.email ?? 'No Email',
           firebaseUser.uid,
+          firebaseUser.photoURL ?? '',
         );
 
-        // Navigate to the Home Screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Google Sign-In successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate to the Profile Screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
         );
       }
     } catch (error) {
       debugPrint("Google Sign-In Error: $error");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Google Sign-In failed. Please try again.")),
+        SnackBar(
+          content: Text("Google Sign-In failed: ${error.toString()}"),
+          backgroundColor: Colors.red,
+        ),
       );
+    } finally {
+      setLoading(false);
     }
   }
+
   Future<String> loginUser({
     required String email,
     required String password,
     required BuildContext context,
   }) async {
     // Input validation
-    if (email.isEmpty) {
-      return "Email cannot be empty.";
+    if (email.isEmpty || password.isEmpty) {
+      return "Please fill in all fields.";
     }
-    if (password.isEmpty) {
-      return "Password cannot be empty.";
-    }
+
     if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(email)) {
       return "Please enter a valid email address.";
     }
 
+    if (password.length < 6) {
+      return "Password must be at least 6 characters.";
+    }
+
     try {
-      setLoading(true); // Show loading state
+      setLoading(true);
 
       // Sign in with email and password
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
       // Fetch user data from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -120,7 +137,6 @@ class SignInProvider with ChangeNotifier {
           .doc(userCredential.user!.uid)
           .get();
 
-      // Ensure the user document exists in Firestore
       if (!userDoc.exists) {
         return "User data not found. Please contact support.";
       }
@@ -130,38 +146,47 @@ class SignInProvider with ChangeNotifier {
         userCredential.user!.displayName ?? 'No Name',
         email,
         userCredential.user!.uid,
+        userCredential.user!.photoURL ?? '',
       );
 
-      // Check if the email is verified
-      if (userCredential.user?.emailVerified == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Login successful!"),
-            backgroundColor: Colors.green,
-          ),
-        );
-        return "Login successful!";
-      } else {
+      // Check email verification
+      if (!userCredential.user!.emailVerified) {
         return "Please verify your email before logging in.";
       }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login successful!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Navigate to profile screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+
+      return "Login successful!";
     } on FirebaseAuthException catch (e) {
-      // Handle specific Firebase exceptions
       switch (e.code) {
         case 'user-not-found':
-          return "No user found for that email.";
+          return "No user found for this email.";
         case 'wrong-password':
-          return "Wrong password provided for that user.";
+          return "Incorrect password.";
         case 'invalid-email':
-          return "The email address is not valid.";
+          return "Invalid email format.";
         case 'user-disabled':
-          return "This user account has been disabled.";
+          return "This account has been disabled.";
+        case 'too-many-requests':
+          return "Too many attempts. Try again later.";
         default:
-          return "Error during login: ${e.message}";
+          return "Login failed: ${e.message}";
       }
     } catch (e) {
-      return "An unknown error occurred.";
+      return "An unexpected error occurred: ${e.toString()}";
     } finally {
-      setLoading(false); // Hide loading state
+      setLoading(false);
     }
   }
 }

@@ -90,7 +90,7 @@ class SignInProvider with ChangeNotifier {
         // Navigate to the Profile Screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
     } catch (error) {
@@ -164,7 +164,7 @@ class SignInProvider with ChangeNotifier {
       // Navigate to profile screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
 
       return "Login successful!";

@@ -142,7 +142,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                               .pushReplacement(
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  ProfileScreen(),
+                                                  HomeScreen(),
                                             ),
                                           );
                                         } else {

@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_project/presentation/home_screen/profile_screen.dart';
+import 'package:firebase_project/presentation/home_screen/provider/home_screen_provider.dart';
 import 'package:firebase_project/presentation/login_screen/provider/signin_provider.dart';
 import 'package:firebase_project/presentation/login_screen/signin_screen.dart';
 import 'package:firebase_project/presentation/signup_screen/provider/signup_provider.dart';
@@ -12,18 +13,20 @@ import 'core/utils/firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp( MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SignUpProvider()),
         ChangeNotifierProvider(create: (_) => SignInProvider()),
+        ChangeNotifierProvider(create: (context) => HomeScreenProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 790),

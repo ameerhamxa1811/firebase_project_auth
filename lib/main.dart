@@ -22,6 +22,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SignUpProvider()),
@@ -34,6 +36,7 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (context, child) {
           return MaterialApp(
+            scaffoldMessengerKey: Provider.of<HomeScreenProvider>(context).scaffoldMessengerKey,
             debugShowCheckedModeBanner: false,
             title: 'Flutter Flex',
             theme: ThemeData(

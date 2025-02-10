@@ -16,6 +16,8 @@ class HomeScreenProvider with ChangeNotifier {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _picker = ImagePicker();
 
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   UserModel? _user;
   File? _selectedImage;
   bool _isLoggingOut = false;
@@ -26,12 +28,11 @@ class HomeScreenProvider with ChangeNotifier {
   bool get isLoggingOut => _isLoggingOut;
   bool get isLoading => _isLoading;
 
-  void _showMessage(BuildContext context, String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
+  void _showMessage(String message, {bool isError = false}) {
+    scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: isError ? Colors.red : Colors.green,
-        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -61,7 +62,7 @@ class HomeScreenProvider with ChangeNotifier {
   }
 
   /// Update profile with a new name and optionally a new image
-  Future<void> updateProfile(BuildContext context, String newName) async {
+  Future<void> updateProfile(String newName) async {
     if (_user == null) return;
 
     _isLoading = true;
@@ -97,12 +98,12 @@ class HomeScreenProvider with ChangeNotifier {
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         notifyListeners();
-        _showMessage(context, "Profile updated successfully!");
+        _showMessage("Profile updated successfully!");
       });
     } catch (e) {
       debugPrint('Error updating profile: ${e.toString()}');
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showMessage(context, "Failed to update profile!", isError: true);
+        _showMessage("Failed to update profile!", isError: true);
       });
     } finally {
       await Future.delayed(const Duration(seconds: 1));
@@ -128,18 +129,18 @@ class HomeScreenProvider with ChangeNotifier {
   }
 
   /// Pick an image from gallery
-  Future<void> pickImage(BuildContext context) async {
+  Future<void> pickImage() async {
     try {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
       if (pickedFile != null) {
         _selectedImage = File(pickedFile.path);
-        _showMessage(context, "Image selected successfully.");
+        _showMessage("Image selected successfully.");
         notifyListeners();
       } else {
-        _showMessage(context, "No image selected.", isError: true);
+        _showMessage("No image selected.", isError: true);
       }
     } catch (e) {
-      _showMessage(context, "Failed to pick image: ${e.toString()}", isError: true);
+      _showMessage("Failed to pick image: ${e.toString()}", isError: true);
     }
   }
 
@@ -166,14 +167,14 @@ class HomeScreenProvider with ChangeNotifier {
       _selectedImage = null;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showMessage(context, "Logged out successfully.");
+        _showMessage("Logged out successfully.");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const SignInScreen()),
         );
       });
     } catch (e) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showMessage(context, "Logout error: ${e.toString()}", isError: true);
+        _showMessage("Logout error: ${e.toString()}", isError: true);
       });
     } finally {
       await Future.delayed(const Duration(seconds: 3)); // Simulate 3 seconds loading

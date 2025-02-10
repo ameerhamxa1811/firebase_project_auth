@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
-              userProvider.updateProfile(context, nameController.text);
+              userProvider.updateProfile( nameController.text);
               Navigator.pop(context);
             },
             child: const Text('Save'),
